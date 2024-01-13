@@ -136,6 +136,7 @@ void setup_cart() {
         cart+=4;
     }
 
+    // I used the wrong resistor so I need to use analogue to read if the pin is set.. 
     // gpio_init(26);
     // gpio_set_dir(26, GPIO_IN);
     // if (gpio_get(26)){
