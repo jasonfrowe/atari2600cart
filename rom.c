@@ -14,33 +14,34 @@
 #include <stdlib.h>
 #include "hardware/adc.h"
 
-void setup_gpio();
-int get_requested_address();
-void put_data_on_bus(uint8_t);
-void setup_rom_contents();
-void data_bus_input();
-void data_bus_output();
-void setup_cart();
+void setup_gpio(); // uses pin defintions and sets address and data bus
+int get_requested_address(); // get address from address bus
+void put_data_on_bus(uint8_t); // puts data on bus
+void setup_cart();  // Will fetch the rom contents
 
-uint romsize = 4096;
-uint8_t rom_contents[32768] = { 0 };
-uint8_t cart = 0;
-uint bankswitch = 0;
+void (*fpBankSwitching)(uint16_t); // function pointer
+void BankSwitching_none(uint16_t);
+void BankSwitching_F8(uint16_t); // 8K
+void BankSwitching_F6(uint16_t); // 16K
+void BankSwitching_F4(uint16_t); // 32K
 
-uint16_t addr;
-uint16_t romoffset = 0;
 
-uint16_t ce;
-uint16_t last_ce;
+// Variables about the ROM
+uint romsize = 4096; // Will be set by setup_cart
+uint8_t rom_contents[32768] = { 0 }; // Will be set by setup_cart
+uint8_t cart = 0; // Will be set by GPIO pins
+uint bankswitch = 0; // Will be set by setup_cart
+
+uint16_t addr;  // address read from address lines
+uint16_t romoffset = 0; // offset for bankswitching
+
+uint16_t ce;  // chip-enable value
+uint16_t last_ce; // last value to monitor changes in ce 
 
 
 int main() {
 
     // Set system clock speed.
-    // 400 MHz
-    // vreg_set_voltage(VREG_VOLTAGE_1_30);
-    // set_sys_clock_pll(1600000000, 4, 1);
-    // set_sys_clock_pll(1200000000, 3, 1);
     set_sys_clock_khz(270000, true);
 
     // Turn on built in LED to see that we have power
@@ -55,7 +56,7 @@ int main() {
     gpio_set_dir(CE_PIN, GPIO_IN);
     // gpio_pull_up(CE_PIN);
 
-    setup_cart();
+    setup_cart(); // Get rom contents and setup bankswitching
     
     last_ce = 1;
     
@@ -70,51 +71,24 @@ int main() {
         if (ce != last_ce) {
             last_ce = ce;
             if (last_ce) {
-                // data_bus_input();
-                gpio_set_dir_in_masked(0xFF);
+                gpio_set_dir_in_masked(0xFF); // data_bus_input();
             } else{
-                // data_bus_output();
-                gpio_set_dir_out_masked(0xFF);
+                gpio_set_dir_out_masked(0xFF); // data_bus_output();
             }
         }
         if (last_ce == 0){
             addr = get_requested_address();
             put_data_on_bus(rom_contents[addr + romoffset]);
 
-            if (bankswitch == 1 && addr == 4088){ //F8 bankswitching (8K)
-                romoffset = 0;
-            } else if (bankswitch == 1 && addr == 4089){
-                romoffset = 4096;
-            } else if (bankswitch == 2 && addr == 4086){ //F6 bankswitching (16K)
-                romoffset = 0;
-            } else if (bankswitch == 2 && addr == 4087){ 
-                romoffset = 4096;
-            } else if (bankswitch == 2 && addr == 4088){ 
-                romoffset = 8192;
-            } else if (bankswitch == 2 && addr == 4089){ 
-                romoffset = 12288;
-            } else if (bankswitch == 3 && addr == 4084){ //F4 bankswitching (32K)
-                romoffset = 0;
-            } else if (bankswitch == 3 && addr == 4085){ 
-                romoffset = 4096;
-            } else if (bankswitch == 3 && addr == 4086){ 
-                romoffset = 8192;
-            } else if (bankswitch == 3 && addr == 4087){ 
-                romoffset = 12288;
-            } else if (bankswitch == 3 && addr == 4088){ 
-                romoffset = 16384;
-            } else if (bankswitch == 3 && addr == 4089){ 
-                romoffset = 20480;
-            } else if (bankswitch == 3 && addr == 4090){ 
-                romoffset = 24576;
-            } else if (bankswitch == 3 && addr == 4091){ 
-                romoffset = 28672;
-            }
+            // bankswitching function
+            (*fpBankSwitching)(addr);
 
         }
 
     }
 }
+
+// Function to set up ROM from DIP-switches
 
 void setup_cart() {
     // Read in DIPs to get cart to use
@@ -136,7 +110,6 @@ void setup_cart() {
         cart+=4;
     }
 
-    // I used the wrong resistor so I need to use analogue to read if the pin is set.. 
     // gpio_init(26);
     // gpio_set_dir(26, GPIO_IN);
     // if (gpio_get(26)){
@@ -250,16 +223,69 @@ void setup_cart() {
         }
     }
 
-    if (romsize == 8192){
+    if (romsize == 4096){
+        bankswitch = 0; // No bankswitching
+        fpBankSwitching = &BankSwitching_none;
+    } else if (romsize == 8192){
         bankswitch = 1; // F8 bankswitching
+        fpBankSwitching = &BankSwitching_F8;
     } else if (romsize == 16384){
         bankswitch = 2; // F6 bankswitching
+        fpBankSwitching = &BankSwitching_F6;
     } else if (romsize == 32768){
         bankswitch = 3; // F4 bankswitching
+        fpBankSwitching = &BankSwitching_F4;
     }
 
 }
 
+// Bank Switching Functions 
+
+void BankSwitching_none(uint16_t addr_in) {
+    romoffset = 0;
+}
+
+void BankSwitching_F8(uint16_t addr_in) {
+    if (addr_in == 4088){
+        romoffset = 0;
+    } else if (addr_in == 4089){
+        romoffset = 4096;
+    }
+}
+
+void BankSwitching_F6(uint16_t addr_in) {
+    if (addr_in == 4086){
+        romoffset = 0;
+    } else if (addr_in == 4087){
+        romoffset = 4096;
+    } else if (addr_in == 4088){
+        romoffset = 8192;
+    } else if (addr_in == 4089){
+        romoffset = 12288;
+    }
+}
+
+void BankSwitching_F4(uint16_t addr_in) {
+    if (addr_in == 4084){
+        romoffset = 0;
+    } else if (addr_in == 4085){
+        romoffset = 4096;
+    } else if (addr_in == 4086){
+        romoffset = 8192;
+    } else if (addr_in == 4087){
+        romoffset = 12288;
+    } else if (addr_in == 4088){
+        romoffset = 16384;
+    } else if (addr_in == 4089){
+        romoffset = 20480;
+    } else if (addr_in == 4090){
+        romoffset = 24576;
+    } else if (addr_in == 4091){
+        romoffset = 28672;
+    }
+}
+
+// GPIO Setup Functions 
 
 void setup_gpio() {
     // Address pins.
@@ -287,12 +313,6 @@ void setup_gpio() {
     gpio_set_dir(A10, GPIO_IN);
     gpio_init(A11);
     gpio_set_dir(A11, GPIO_IN);
-    // gpio_init(A12);
-    // gpio_set_dir(A12, GPIO_IN);
-    // gpio_init(A13);
-    // gpio_set_dir(A13, GPIO_IN);
-    // gpio_init(A14);
-    // gpio_set_dir(A14, GPIO_IN);
 
     // Data pins.
     gpio_init(D0);
@@ -314,16 +334,12 @@ void setup_gpio() {
 }
 
 int get_requested_address() {
-    // Return only first 12 bits.
-    // return gpio_get_all() & 32767;
+    // Return only first 12 bits from address bus.
     return ((gpio_get_all() >> 8) & 4095);
 }
 
 void put_data_on_bus(uint8_t rom_cont) {
-    // int data = rom_contents[address];
-
-    // gpio mask = 8355840; // i.e.: 11111111000000000000000
-    // Shift data 15 bits to put it in correct position to match data pin defintion.
+    // 8-bits onto the data bus
     gpio_put_masked(255, rom_cont);
 }
 
