@@ -21,7 +21,7 @@ I'm going to put together a build walk through to help those that may want to cr
 ### Required Materials
 
 | Part | Description | Mouser Part Number |  
-------------------------------------  
+| ----- | ----------- | -------------------|   
 | Raspberry Pi Pico | This build uses the non-wifi version |  358-SC0915 |  
 | Protoboard        | Larger is okay.  There is barely enough room with the one I picked |  N/A |  
 | Cartridge board   | I used this simple project from PCBWay to get a card interface | See intro for link |  
