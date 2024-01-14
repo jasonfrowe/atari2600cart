@@ -32,5 +32,7 @@ I'm going to put together a build walk through to help those that may want to cr
 | 2 K ohm resistor | Generic resistors | N/A |  
 | 1N4007 diode     | Diode | N/A |  
 | 104 capacitor | 0.1uF ceramic capacitor | N/A |  
-| Sockets and headers | These are optional, but recommended | N/A |  
+| Sockets and headers | These are optional, but recommended | 571-1-2199299-2  |  
+| Button switch | I used an Omron B3F, but pick what you like. | N/A |
+| Dip switches | 4 bank needed.  | 655-2454982-3 | 
 
