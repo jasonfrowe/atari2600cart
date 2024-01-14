@@ -254,36 +254,19 @@ void BankSwitching_F8(uint16_t addr_in) {
 }
 
 void BankSwitching_F6(uint16_t addr_in) {
-    if (addr_in == 4086){
-        romoffset = 0;
-    } else if (addr_in == 4087){
-        romoffset = 4096;
-    } else if (addr_in == 4088){
-        romoffset = 8192;
-    } else if (addr_in == 4089){
-        romoffset = 12288;
+    if ((addr_in >= 4086) && (addr_in <= 4089)){
+        romoffset = 4096 * (addr_in - 4086);
     }
 }
 
+
 void BankSwitching_F4(uint16_t addr_in) {
-    if (addr_in == 4084){
-        romoffset = 0;
-    } else if (addr_in == 4085){
-        romoffset = 4096;
-    } else if (addr_in == 4086){
-        romoffset = 8192;
-    } else if (addr_in == 4087){
-        romoffset = 12288;
-    } else if (addr_in == 4088){
-        romoffset = 16384;
-    } else if (addr_in == 4089){
-        romoffset = 20480;
-    } else if (addr_in == 4090){
-        romoffset = 24576;
-    } else if (addr_in == 4091){
-        romoffset = 28672;
+
+    if ((addr_in >= 4084) && (addr_in <= 4091)){
+        romoffset = 4096 * (addr_in - 4084);
     }
 }
+
 
 // GPIO Setup Functions 
 
