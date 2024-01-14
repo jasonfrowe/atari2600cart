@@ -9,6 +9,9 @@ The cart allows for 16 different cartridges of 4K, 8K, 16K and 32K sizes with st
 
 A helper script 'make_romheaders.py' is provided that will read in ROMS from the roms/ directory and create the necesssary roms_XX.h headers.
 
+![Alt Final Product in an Atari 2600+](pics/IMG_6257.png)
+
+
 ## Build Log
 
 I'm going to put together a build walk through to help those that may want to create their own Pico Multi-Cart for the 2600+
