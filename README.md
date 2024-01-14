@@ -18,4 +18,19 @@ I'm going to put together a build walk through to help those that may want to cr
 
 ![Alt Picture of Required Materials](pics/IMG_6307.png)
 
+### Required Materials
+
+| Part | Description | Mouser Part Number |
+------------------------------------
+| Raspberry Pi Pico | This build uses the non-wifi version |  358-SC0915 |
+| Protoboard        | Larger is okay.  There is barely enough room with the one I picked |  N/A |
+| Cartridge board   | I used this simple project from PCBWay to get a card interface | See intro for link |
+| SN74LS04N         | Hex Inverter | 595-SN74LS04N |
+| SN74LVC245AN x2 | Bus Transceivers Tri-State Octal Bus | 595-SN74LVC245AN | 
+| 10 K ohm resistor x 4 | Generic resistors | N/A |
+| 1 K ohm resistor | Generic resistors | N/A |
+| 2 K ohm resistor | Generic resistors | N/A |
+| 1N4007 diode     | Diode | N/A |
+| 104 capacitor | 0.1uF ceramic capacitor | N/A | 
+| Sockets and headers | These are optional, but recommended | N/A |
 
