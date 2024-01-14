@@ -32,7 +32,18 @@ I'm going to put together a build walk through to help those that may want to cr
 | 2 K ohm resistor | Generic resistors | N/A |  
 | 1N4007 diode     | Diode | N/A |  
 | 104 capacitor | 0.1uF ceramic capacitor | N/A |  
-| Sockets and headers | These are optional, but recommended | 571-1-2199299-2  |  
+| Sockets and headers | These are optional, but recommended -- and order extras!| 571-1-2199299-2  |  
 | Button switch | I used an Omron B3F, but pick what you like. | N/A |
 | Dip switches | 4 bank needed.  | 655-2454982-3 | 
 
+### Layout.
+
+This is the layout I went with.  Using sockets really helps to plan the build and if you mess up you only lose a socket not the IC.
+
+![Alt Picture of final layout](pics/IMG_6255.png)
+
+### Wiring
+
+I used Wire Wrap Wire as it's very flexable and thin making it easy to work with. Using thicker wires makes everything too cramped.
+
+![Alt My messy but working wiring](pics/IMG_6256.png)
